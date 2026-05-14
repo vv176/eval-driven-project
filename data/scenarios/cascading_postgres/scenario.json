@@ -1,0 +1,51 @@
+{
+  "id": "cascading_postgres",
+  "name": "Cascading PostgreSQL Connection Pool Exhaustion",
+  "difficulty": "hard",
+  "description": "A cascading failure triggered by two factors: a connection leak bug in TaskRepository.findTasksWithCustomFilter() and a 10x spike in webhook traffic from a GitHub integration. Under normal load the leak is negligible, but the traffic spike caused the connection pool to exhaust, bringing down task-service and cascading into project-service and notification-service.",
+  "timeline": {
+    "incident_start": "2024-01-25T09:30:00Z",
+    "webhook_spike_start": "2024-01-25T09:00:00Z",
+    "first_connection_leak_warning": "2024-01-25T09:30:00Z",
+    "pool_exhaustion": "2024-01-25T09:45:00Z",
+    "cascade_to_project_service": "2024-01-25T10:00:00Z",
+    "cascade_to_notification_service": "2024-01-25T10:15:00Z",
+    "scenario_snapshot_time": "2024-01-25T11:00:00Z"
+  },
+  "root_cause": {
+    "summary": "MULTI-CAUSE: (1) Connection leak in TaskRepositoryCustomImpl.findTasksWithCustomFilter() at lines 95-98 — when a SQLException occurs during ResultSet processing, the catch block throws a RuntimeException without closing the connection. The connection.close() at line 102-108 is outside the try-catch and is never reached on exception. (2) A spike in webhook traffic from a GitHub integration starting at 09:00 increased calls to findTasksWithCustomFilter() by 10x. Under normal load (~200 req/s) the leak rate was negligible because exceptions were rare. The webhook spike pushed request rate to ~800 req/s, triggering more filter-column edge cases and SQL errors, causing the leak rate to exceed HikariCP's pool recovery capacity.",
+    "component": "task-service",
+    "file": "TaskRepository.java",
+    "line_range": "95-98",
+    "mechanism": "The catch block at line 95 catches SQLException and throws RuntimeException at line 98. The connection variable, acquired at line 52, is only closed at lines 102-108 which are outside the try-catch block. When the RuntimeException propagates, connection.close() is never executed, leaking the connection back to HikariCP. Each leaked connection is held indefinitely. With 20 max pool connections and ~800 req/s hitting findTasksWithCustomFilter() via WebhookProcessor.processWebhook() (line 40-41), the pool exhausts within 30 minutes of the traffic spike.",
+    "trigger": "GitHub integration webhook spike starting at 09:00 on 2024-01-25. A customer connected a large GitHub organization with ~200 repositories, triggering batch webhook events for issue syncing. WebhookProcessor.processBatch() (line 56-66) parallelizes processing across 10 threads, each calling findTasksWithCustomFilter().",
+    "why_not_caught": "The connection leak bug was introduced in DEPLOY-TS-023 (v3.1.0, deployed 2024-01-22). Under normal webhook volume (~80 req/s), SQLExceptions in findTasksWithCustomFilter were rare (<1/hour) and leaked connections were reclaimed by HikariCP's leak detection before accumulating. The 10x traffic spike changed the failure mode from slow drip to rapid exhaustion."
+  },
+  "red_herring": {
+    "description": "CPU spike on search-service at 09:45 caused by a scheduled re-indexing job processing 45,000 workspace documents. The re-index job runs daily and completed normally by 10:15. It has no dependency on task-service, project-service, or their databases. The timing coincidence with the cascade makes it look related but it is entirely independent.",
+    "service": "search-service"
+  },
+  "cascade_path": [
+    "task-service connection pool exhausts (09:45) -> task-service returns 503s",
+    "project-service calls task-service for task validation during project operations -> project-service starts failing (10:00)",
+    "notification-service depends on both task-service (task details) and project-service (project details) -> notification queue backs up (10:15)"
+  ],
+  "affected_services": ["task-service", "project-service", "notification-service"],
+  "affected_infrastructure": ["task-db"],
+  "correct_severity": "P1",
+  "is_false_alarm": false,
+  "recommended_actions": [
+    {"tool": "restart_service", "args": {"service_name": "task-service"}},
+    {"tool": "scale_service", "args": {"service_name": "task-service", "replicas": 3}},
+    {"tool": "create_incident_ticket", "args": {"title": "Cascading failure — task-service connection pool exhaustion", "severity": "P1", "affected_services": ["task-service", "project-service", "notification-service"]}},
+    {"tool": "page_oncall", "args": {"team_name": "core-product-oncall", "severity": "P1"}}
+  ],
+  "services_status": {
+    "api-gateway": {"status": "healthy", "version": "v1.8.2"},
+    "project-service": {"status": "degraded", "version": "v2.3.1"},
+    "task-service": {"status": "critical", "version": "v3.1.0"},
+    "notification-service": {"status": "degraded", "version": "v1.5.3"},
+    "auth-service": {"status": "healthy", "version": "v2.0.1"},
+    "search-service": {"status": "healthy", "version": "v1.2.0"}
+  }
+}

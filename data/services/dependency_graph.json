@@ -1,0 +1,62 @@
+{
+  "services": {
+    "api-gateway": {
+      "depends_on": ["auth-service", "project-service", "task-service", "search-service"]
+    },
+    "project-service": {
+      "depends_on": ["project-db", "redis-cache", "notification-service"]
+    },
+    "task-service": {
+      "depends_on": ["task-db", "project-service", "notification-service"]
+    },
+    "notification-service": {
+      "depends_on": ["redis-queue", "email-service"]
+    },
+    "search-service": {
+      "depends_on": ["elasticsearch"]
+    },
+    "auth-service": {
+      "depends_on": ["auth-db", "redis-session"]
+    },
+    "project-db": {
+      "depends_on": [],
+      "type": "postgres",
+      "description": "PostgreSQL database for project data"
+    },
+    "task-db": {
+      "depends_on": [],
+      "type": "postgres",
+      "description": "PostgreSQL database for task data"
+    },
+    "auth-db": {
+      "depends_on": [],
+      "type": "postgres",
+      "description": "PostgreSQL database for auth/user data"
+    },
+    "redis-cache": {
+      "depends_on": [],
+      "type": "redis",
+      "description": "Redis cache for project-service"
+    },
+    "redis-session": {
+      "depends_on": [],
+      "type": "redis",
+      "description": "Redis session store for auth-service"
+    },
+    "redis-queue": {
+      "depends_on": [],
+      "type": "redis",
+      "description": "Redis queue for notification-service"
+    },
+    "elasticsearch": {
+      "depends_on": [],
+      "type": "elasticsearch",
+      "description": "Elasticsearch cluster for search-service"
+    },
+    "email-service": {
+      "depends_on": [],
+      "type": "external",
+      "description": "External email delivery service (SendGrid)"
+    }
+  }
+}

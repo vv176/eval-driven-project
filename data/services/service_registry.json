@@ -1,0 +1,117 @@
+{
+  "services": {
+    "api-gateway": {
+      "team": "platform",
+      "tier": 1,
+      "tech_stack": ["java", "spring-boot", "netty"],
+      "description": "Main API gateway — routes all external requests, handles rate limiting and auth forwarding",
+      "oncall_team": "platform-oncall",
+      "port": 8080,
+      "replicas": 4,
+      "current_version": "v1.8.2"
+    },
+    "project-service": {
+      "team": "core-product",
+      "tier": 1,
+      "tech_stack": ["java", "spring-boot", "hibernate"],
+      "description": "Manages projects, workspaces, and GDPR-compliant data access for EU customers",
+      "oncall_team": "core-product-oncall",
+      "port": 8081,
+      "replicas": 3,
+      "current_version": "v2.3.1"
+    },
+    "task-service": {
+      "team": "core-product",
+      "tier": 1,
+      "tech_stack": ["java", "spring-boot", "hibernate"],
+      "description": "Manages tasks, assignments, and webhook-triggered automations",
+      "oncall_team": "core-product-oncall",
+      "port": 8082,
+      "replicas": 3,
+      "current_version": "v3.1.0"
+    },
+    "notification-service": {
+      "team": "engagement",
+      "tier": 2,
+      "tech_stack": ["java", "spring-boot", "redis"],
+      "description": "Processes notification queue — email, in-app, and webhook delivery",
+      "oncall_team": "engagement-oncall",
+      "port": 8083,
+      "replicas": 2,
+      "current_version": "v1.5.3"
+    },
+    "auth-service": {
+      "team": "platform",
+      "tier": 1,
+      "tech_stack": ["java", "spring-boot", "jwt"],
+      "description": "Authentication and authorization — JWT tokens, session management, RBAC",
+      "oncall_team": "platform-oncall",
+      "port": 8084,
+      "replicas": 3,
+      "current_version": "v2.0.1"
+    },
+    "search-service": {
+      "team": "core-product",
+      "tier": 2,
+      "tech_stack": ["java", "spring-boot", "elasticsearch"],
+      "description": "Full-text search across projects, tasks, and documents",
+      "oncall_team": "core-product-oncall",
+      "port": 8085,
+      "replicas": 2,
+      "current_version": "v1.2.0"
+    }
+  },
+  "infrastructure": {
+    "project-db": {
+      "type": "postgres",
+      "version": "15.4",
+      "host": "project-db.internal.clouddesk.io",
+      "max_connections": 200,
+      "disk_size_gb": 500,
+      "replication": {
+        "mode": "streaming",
+        "replicas": 1,
+        "slots": ["project_replica_slot"]
+      }
+    },
+    "task-db": {
+      "type": "postgres",
+      "version": "15.4",
+      "host": "task-db.internal.clouddesk.io",
+      "max_connections": 200,
+      "disk_size_gb": 300
+    },
+    "auth-db": {
+      "type": "postgres",
+      "version": "15.4",
+      "host": "auth-db.internal.clouddesk.io",
+      "max_connections": 100,
+      "disk_size_gb": 100
+    },
+    "redis-cache": {
+      "type": "redis",
+      "version": "7.2",
+      "host": "redis-cache.internal.clouddesk.io",
+      "max_memory_gb": 8
+    },
+    "redis-session": {
+      "type": "redis",
+      "version": "7.2",
+      "host": "redis-session.internal.clouddesk.io",
+      "max_memory_gb": 4
+    },
+    "redis-queue": {
+      "type": "redis",
+      "version": "7.2",
+      "host": "redis-queue.internal.clouddesk.io",
+      "max_memory_gb": 4
+    },
+    "elasticsearch": {
+      "type": "elasticsearch",
+      "version": "8.11",
+      "host": "es.internal.clouddesk.io",
+      "nodes": 3,
+      "disk_size_gb": 200
+    }
+  }
+}

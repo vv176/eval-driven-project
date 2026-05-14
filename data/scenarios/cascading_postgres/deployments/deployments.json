@@ -1,0 +1,35 @@
+[
+  {
+    "deploy_id": "DEPLOY-TS-023",
+    "service": "task-service",
+    "timestamp": "2024-01-22T16:00:00Z",
+    "version_from": "v3.0.2",
+    "version_to": "v3.1.0",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4550: Refactor webhook processing to support batch operations",
+    "status": "SUCCESS",
+    "rollback_target": "v3.0.2"
+  },
+  {
+    "deploy_id": "DEPLOY-NS-015",
+    "service": "notification-service",
+    "timestamp": "2024-01-20T11:30:00Z",
+    "version_from": "v1.5.2",
+    "version_to": "v1.5.3",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4538: Add dead letter queue support for failed notifications",
+    "status": "SUCCESS",
+    "rollback_target": "v1.5.2"
+  },
+  {
+    "deploy_id": "DEPLOY-SS-008",
+    "service": "search-service",
+    "timestamp": "2024-01-18T14:00:00Z",
+    "version_from": "v1.1.9",
+    "version_to": "v1.2.0",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4525: Optimize workspace re-index job scheduling",
+    "status": "SUCCESS",
+    "rollback_target": "v1.1.9"
+  }
+]

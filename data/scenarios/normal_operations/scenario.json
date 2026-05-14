@@ -1,0 +1,42 @@
+{
+  "id": "normal_operations",
+  "name": "Normal Operations — False Alarm",
+  "difficulty": "easy",
+  "description": "A HighLatency alert fired on api-gateway due to a monitoring misconfiguration. The alert was checking 1-minute p99 instead of 5-minute p99, and a brief spike of 3 requests from a single customer on slow wifi triggered it. All services are healthy with normal metrics. An auth-service deployment happened 30 minutes before the alert but is completely unrelated.",
+  "timeline": {
+    "incident_start": "2024-01-28T14:00:00Z",
+    "first_alert": "2024-01-28T14:00:00Z",
+    "first_customer_report": null,
+    "scenario_snapshot_time": "2024-01-28T15:00:00Z"
+  },
+  "root_cause": {
+    "summary": "Nothing is wrong. The HighLatency alert fired on api-gateway because the alert threshold was misconfigured — it was checking 1-minute p99 latency instead of 5-minute p99. A brief spike of 3 requests from a single customer (IP 198.51.100.44) during a slow wifi moment pushed the 1-minute p99 to 420ms, exceeding the 300ms threshold. The actual 5-minute p99 remained normal at ~150ms throughout.",
+    "component": "monitoring-config",
+    "file": null,
+    "line_range": null,
+    "mechanism": "Alert rule 'HighLatency' was configured with window=1m and metric=p99_latency, threshold=300ms. A single customer making 3 requests over slow wifi (~400ms each) was enough to push the 1-minute p99 above threshold. The 5-minute p99 (the standard metric) was never elevated.",
+    "trigger": "Three slow requests from IP 198.51.100.44 at 2024-01-28T14:00:00Z. Client-side network issue (slow wifi), not a server-side problem.",
+    "why_not_caught": "Alert was recently configured by a junior SRE who used a 1-minute window instead of the standard 5-minute window, making it extremely sensitive to brief per-client latency blips."
+  },
+  "red_herring": {
+    "description": "Auth-service deployment DEPLOY-AS-015 at 13:30 (v2.0.1 -> v2.0.2) — a minor config change updating session TTL from 24h to 12h. Completely healthy before and after. An agent might blame this deployment for the latency alert, but auth-service metrics are normal and the deployment has no relation to api-gateway latency.",
+    "deploy_id": "DEPLOY-AS-015"
+  },
+  "affected_services": [],
+  "affected_infrastructure": [],
+  "affected_customers": [],
+  "unaffected_customers": ["CUST-001", "CUST-002", "CUST-003", "CUST-004", "CUST-005"],
+  "correct_severity": "P4",
+  "is_false_alarm": true,
+  "recommended_actions": [
+    {"tool": "create_incident_ticket", "args": {"title": "Fix HighLatency alert config — change window from 1m to 5m p99", "severity": "P4", "affected_services": ["api-gateway"]}}
+  ],
+  "services_status": {
+    "api-gateway": {"status": "healthy", "version": "v1.8.2"},
+    "project-service": {"status": "healthy", "version": "v2.3.0"},
+    "task-service": {"status": "healthy", "version": "v3.1.0"},
+    "notification-service": {"status": "healthy", "version": "v1.5.3"},
+    "auth-service": {"status": "healthy", "version": "v2.0.2"},
+    "search-service": {"status": "healthy", "version": "v1.2.0"}
+  }
+}

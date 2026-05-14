@@ -1,0 +1,38 @@
+{
+  "id": "database_disk_critical",
+  "name": "Database Disk Space Critical",
+  "difficulty": "easy",
+  "description": "Disk space alert fired for project-db. Disk usage at 92% and growing at ~2GB/hour due to WAL log accumulation from a stale replication slot.",
+  "timeline": {
+    "incident_start": "2024-01-20T08:00:00Z",
+    "first_alert": "2024-01-20T10:00:00Z",
+    "scenario_snapshot_time": "2024-01-20T11:00:00Z"
+  },
+  "root_cause": {
+    "summary": "Stale replication slot 'project_replica_slot' is preventing WAL cleanup. The replica was decommissioned 3 days ago but the replication slot was never dropped. WAL segments are accumulating at ~2GB/hour.",
+    "component": "project-db",
+    "mechanism": "PostgreSQL retains WAL segments for active replication slots. When a slot is active but the subscriber is gone, WAL accumulates indefinitely. The slot 'project_replica_slot' is inactive (active=false) but not dropped.",
+    "trigger": "The replica was removed during maintenance 3 days ago (2024-01-17) but the DBA forgot to drop the replication slot."
+  },
+  "red_herring": {
+    "description": "A schema migration (adding an index) was deployed to project-service yesterday (2024-01-19). The migration completed successfully and created temp files that briefly spiked disk usage, but those were cleaned up. The ongoing growth is from WAL, not from the migration.",
+    "deploy_id": "DEPLOY-PS-041"
+  },
+  "affected_services": ["project-db"],
+  "affected_infrastructure": ["project-db"],
+  "affected_customers": [],
+  "correct_severity": "P2",
+  "is_false_alarm": false,
+  "recommended_actions": [
+    {"tool": "page_oncall", "args": {"team_name": "platform-oncall", "severity": "P2", "message": "project-db disk at 92% and growing ~2GB/hr. Stale replication slot 'project_replica_slot' preventing WAL cleanup. Needs DBA to drop the slot."}},
+    {"tool": "create_incident_ticket", "args": {"title": "project-db disk critical — stale replication slot preventing WAL cleanup", "severity": "P2", "affected_services": ["project-db"]}}
+  ],
+  "services_status": {
+    "api-gateway": {"status": "healthy", "version": "v1.8.2"},
+    "project-service": {"status": "healthy", "version": "v2.3.1"},
+    "task-service": {"status": "healthy", "version": "v3.1.0"},
+    "notification-service": {"status": "healthy", "version": "v1.5.3"},
+    "auth-service": {"status": "healthy", "version": "v2.0.1"},
+    "search-service": {"status": "healthy", "version": "v1.2.0"}
+  }
+}

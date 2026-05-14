@@ -1,0 +1,59 @@
+[
+  {
+    "deploy_id": "DEPLOY-PS-042",
+    "commit_sha": "a3f2b91",
+    "author": "priya.sharma",
+    "commit_message": "JIRA-4521: Add GDPR compliance filtering for EU project listings",
+    "files_changed": [
+      {
+        "path": "project-service/ProjectService.java",
+        "change_type": "modified",
+        "diff": "--- a/project-service/ProjectService.java\n+++ b/project-service/ProjectService.java\n@@ -1,6 +1,7 @@\n package com.clouddesk.project.service;\n \n+import com.clouddesk.project.compliance.GdprDataFilter;\n import com.clouddesk.project.dto.CreateProjectRequest;\n import com.clouddesk.project.dto.ProjectResponseDto;\n import com.clouddesk.project.dto.UpdateProjectRequest;\n@@ -14,8 +15,10 @@ import org.springframework.transaction.annotation.Transactional;\n \n import java.time.Instant;\n+import java.util.ArrayList;\n import java.util.List;\n+import java.util.Set;\n import java.util.UUID;\n \n @Slf4j\n@@ -23,8 +26,11 @@ import java.util.UUID;\n @RequiredArgsConstructor\n public class ProjectService {\n \n+    private static final Set<String> EU_REGIONS = Set.of(\"eu-west-1\", \"eu-north-1\");\n     private static final int MAX_PROJECTS_PER_WORKSPACE = 500;\n \n     private final ProjectRepository projectRepository;\n+    private final GdprDataFilter gdprDataFilter;\n     private final ProjectMapper projectMapper;\n \n@@ -35,6 +41,17 @@ public class ProjectService {\n \n         final List<Project> projects = projectRepository.findByOwnerIdOrderByUpdatedAtDesc(userId);\n \n+        if (projects.isEmpty()) {\n+            return List.of();\n+        }\n+\n+        log.debug(\"Found {} projects for userId={}, checking region compliance\", projects.size(), userId);\n+\n+        // Apply GDPR filtering for EU regions\n+        if (EU_REGIONS.contains(region)) {\n+            log.debug(\"EU region detected ({}), applying GDPR data filtering\", region);\n+            final List<ProjectResponseDto> filteredResults = new ArrayList<>();\n+            for (final Project project : projects) {\n+                final Project filtered = gdprDataFilter.filterProject(project);\n+                filteredResults.add(projectMapper.toResponseDto(filtered));\n+            }\n+            return filteredResults;\n+        }\n+\n         return projects.stream()\n                 .map(projectMapper::toResponseDto)\n                 .toList();"
+      },
+      {
+        "path": "project-service/GdprDataFilter.java",
+        "change_type": "added",
+        "diff": "--- /dev/null\n+++ b/project-service/GdprDataFilter.java\n@@ -0,0 +1,103 @@\n+package com.clouddesk.project.compliance;\n+\n+import com.clouddesk.project.model.Project;\n+import lombok.RequiredArgsConstructor;\n+import lombok.extern.slf4j.Slf4j;\n+import org.springframework.jdbc.core.JdbcTemplate;\n+import org.springframework.stereotype.Component;\n+\n+import java.util.List;\n+import java.util.Map;\n+import java.util.Set;\n+import java.util.stream.Collectors;\n+\n+@Slf4j\n+@Component\n+@RequiredArgsConstructor\n+public class GdprDataFilter {\n+\n+    private static final String COMPLIANCE_CHECK_SQL =\n+            \"SELECT compliance_status FROM gdpr_audit_log WHERE project_id = ? ORDER BY checked_at DESC LIMIT 1\";\n+\n+    private static final String BATCH_COMPLIANCE_SQL =\n+            \"SELECT project_id, compliance_status FROM gdpr_audit_log \" +\n+            \"WHERE project_id IN (%s) AND checked_at = \" +\n+            \"(SELECT MAX(checked_at) FROM gdpr_audit_log g2 WHERE g2.project_id = gdpr_audit_log.project_id)\";\n+\n+    private final JdbcTemplate jdbcTemplate;\n+\n+    /**\n+     * Filters a single project for GDPR compliance. Queries the gdpr_audit_log\n+     * table to verify the project's current compliance status and redacts\n+     * sensitive fields if the project is not fully compliant.\n+     *\n+     * NOTE: For bulk operations, prefer {@link #filterProjects(List)} which\n+     * uses a single batched query instead of one query per project.\n+     */\n+    public Project filterProject(final Project project) {\n+        log.debug(\"Checking GDPR compliance for project={}\", project.getId());\n+        final String status = checkComplianceStatus(project.getId());\n+\n+        if (!\"COMPLIANT\".equals(status)) {\n+            log.warn(\"Project {} is non-compliant (status={}), redacting PII fields\", project.getId(), status);\n+            return redactSensitiveFields(project);\n+        }\n+        return project;\n+    }\n+\n+    /**\n+     * Batch filters multiple projects in a single database round-trip.\n+     * Significantly more efficient than calling filterProject() in a loop\n+     * for large result sets — uses an IN clause instead of N individual queries.\n+     */\n+    public List<Project> filterProjects(final List<Project> projects) {\n+        if (projects.isEmpty()) {\n+            return projects;\n+        }\n+\n+        log.debug(\"Batch GDPR compliance check for {} projects\", projects.size());\n+        final Map<String, String> complianceMap = batchCheckComplianceStatus(projects);\n+\n+        return projects.stream()\n+                .map(project -> {\n+                    final String status = complianceMap.getOrDefault(project.getId(), \"UNKNOWN\");\n+                    if (!\"COMPLIANT\".equals(status)) {\n+                        log.warn(\"Project {} non-compliant in batch check (status={})\", project.getId(), status);\n+                        return redactSensitiveFields(project);\n+                    }\n+                    return project;\n+                })\n+                .toList();\n+    }\n+\n+    String checkComplianceStatus(final String projectId) {\n+        final List<String> results = jdbcTemplate.queryForList(COMPLIANCE_CHECK_SQL, String.class, projectId);\n+        if (results.isEmpty()) {\n+            log.warn(\"No GDPR audit record found for project={}, treating as non-compliant\", projectId);\n+            return \"UNKNOWN\";\n+        }\n+        return results.get(0);\n+    }\n+\n+    private Map<String, String> batchCheckComplianceStatus(final List<Project> projects) {\n+        final Set<String> projectIds = projects.stream()\n+                .map(Project::getId)\n+                .collect(Collectors.toSet());\n+\n+        final String placeholders = projectIds.stream().map(id -> \"?\").collect(Collectors.joining(\",\"));\n+        final String sql = String.format(BATCH_COMPLIANCE_SQL, placeholders);\n+\n+        return jdbcTemplate.queryForList(sql, projectIds.toArray())\n+                .stream()\n+                .collect(Collectors.toMap(\n+                        row -> (String) row.get(\"project_id\"),\n+                        row -> (String) row.get(\"compliance_status\")\n+                ));\n+    }\n+\n+    private Project redactSensitiveFields(final Project project) {\n+        return project.toBuilder()\n+                .description(\"[REDACTED - GDPR]\")\n+                .build();\n+    }\n+}"
+      }
+    ]
+  },
+  {
+    "deploy_id": "DEPLOY-RC-001",
+    "commit_sha": "e7c4d22",
+    "author": "devops-bot",
+    "commit_message": "Update Redis maxmemory-policy from allkeys-lru to volatile-lru",
+    "files_changed": [
+      {
+        "path": "infrastructure/redis-cache/redis.conf",
+        "change_type": "modified",
+        "diff": "--- a/infrastructure/redis-cache/redis.conf\n+++ b/infrastructure/redis-cache/redis.conf\n@@ -42,7 +42,7 @@ maxmemory 2gb\n # MAXMEMORY POLICY: how Redis will select what to remove when maxmemory\n # is reached.\n-maxmemory-policy allkeys-lru\n+maxmemory-policy volatile-lru\n \n # Snapshotting\n save 900 1"
+      }
+    ]
+  },
+  {
+    "deploy_id": "DEPLOY-TS-018",
+    "commit_sha": "b8d1f45",
+    "author": "rahul.dev",
+    "commit_message": "JIRA-4498: Fix webhook retry logic for failed deliveries",
+    "files_changed": [
+      {
+        "path": "task-service/WebhookProcessor.java",
+        "change_type": "modified",
+        "diff": "--- a/task-service/WebhookProcessor.java\n+++ b/task-service/WebhookProcessor.java\n@@ -28,7 +28,9 @@ public class WebhookProcessor {\n     public void processWebhook(final WebhookEvent event) {\n         int retryCount = 0;\n-        while (retryCount < MAX_RETRIES) {\n+        while (retryCount <= MAX_RETRIES) {\n             try {\n                 deliverWebhook(event);\n+                log.info(\"Webhook delivered successfully for event={} on attempt={}\", event.getId(), retryCount + 1);\n                 return;\n             } catch (final WebhookDeliveryException e) {\n+                retryCount++;\n                 log.warn(\"Webhook delivery failed for event={}, attempt={}/{}\", event.getId(), retryCount, MAX_RETRIES);\n-                retryCount++;\n                 backoff(retryCount);\n             }\n         }"
+      }
+    ]
+  },
+  {
+    "deploy_id": "DEPLOY-AG-029",
+    "commit_sha": "c4e7a88",
+    "author": "alex.chen",
+    "commit_message": "JIRA-4485: Add request tracing headers for distributed tracing",
+    "files_changed": [
+      {
+        "path": "api-gateway/RequestRouter.java",
+        "change_type": "modified",
+        "diff": "--- a/api-gateway/RequestRouter.java\n+++ b/api-gateway/RequestRouter.java\n@@ -45,6 +45,10 @@ public class RequestRouter {\n     public ServerResponse routeRequest(final ServerRequest request) {\n         final String path = request.path();\n         final String traceId = request.headers().firstHeader(\"X-Trace-Id\");\n+        if (traceId == null) {\n+            final String generatedTraceId = UUID.randomUUID().toString();\n+            log.info(\"No trace ID found, generating traceId={}\", generatedTraceId);\n+        }\n \n         log.info(\"Routing request path={} traceId={}\", path, traceId);\n         final ServiceTarget target = resolveTarget(path);"
+      }
+    ]
+  }
+]

@@ -1,0 +1,410 @@
+[
+  {
+    "id": "eu_api_001",
+    "scenario_id": "eu_api_degradation",
+    "difficulty": "easy",
+    "ticket": {
+      "title": "EU customers reporting slow project loading",
+      "description": "Multiple EU enterprise customers (Meridian Analytics, Quantum Financial) are reporting that project listing pages take 5-10 seconds to load. Started approximately 1 hour ago. US customers are not affected. Meridian Analytics has 87 projects and says it was fine yesterday.",
+      "reporter": "support-team",
+      "severity": "P2",
+      "timestamp": "2024-01-15T14:30:00Z"
+    },
+    "expected": {
+      "root_cause": "N+1 query in ProjectService.getProjectsForUser() at line 50-53. The for loop calls gdprDataFilter.filterProject(project) per project instead of using the batch filterProjects() method. Each call triggers an individual SQL query against gdpr_audit_log. A user with 87 projects generates 87 extra DB queries per request. Only affects EU regions because the N+1 loop is inside an EU_REGIONS check at line 47. Introduced in deployment DEPLOY-PS-042 (v2.3.1) at 13:45.",
+      "affected_services": ["api-gateway", "project-service"],
+      "recommended_actions": [
+        {"tool": "rollback_deployment", "args": {"service_name": "project-service", "target_version": "v2.3.0"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P2", "affected_services": ["project-service"]}}
+      ],
+      "severity_assessment": "P2",
+      "customer_impact": "EU enterprise customers with gdpr_strict_mode enabled",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "project-service"},
+      "search_logs": {"service_name": "project-service"}
+    },
+    "difficulty_multiplier": 1.0
+  },
+  {
+    "id": "eu_api_002",
+    "scenario_id": "eu_api_degradation",
+    "difficulty": "medium",
+    "ticket": {
+      "title": "Project API timeouts for some customers",
+      "description": "We're seeing intermittent 504 errors on the project listing endpoint. Not all customers are affected. The errors started after a deployment earlier today. Redis config was also updated today — could that be related?",
+      "reporter": "backend-team",
+      "severity": "P2",
+      "timestamp": "2024-01-15T14:45:00Z"
+    },
+    "expected": {
+      "root_cause": "N+1 query in ProjectService.getProjectsForUser() at line 50-53. The for loop calls gdprDataFilter.filterProject(project) per project instead of using the batch filterProjects() method. Each call triggers an individual SQL query against gdpr_audit_log. Only affects EU regions because the N+1 loop is inside an EU_REGIONS check at line 47. Introduced in deployment DEPLOY-PS-042 (v2.3.1). The Redis config change (DEPLOY-RC-001) is unrelated — Redis metrics are healthy.",
+      "affected_services": ["api-gateway", "project-service"],
+      "recommended_actions": [
+        {"tool": "rollback_deployment", "args": {"service_name": "project-service", "target_version": "v2.3.0"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P2", "affected_services": ["project-service"]}}
+      ],
+      "severity_assessment": "P2",
+      "customer_impact": "EU enterprise customers with gdpr_strict_mode enabled",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_deployment_history": {"service_name": "project-service"},
+      "get_service_metrics": {"service_name": "project-service", "metric_type": "latency_p99"}
+    },
+    "difficulty_multiplier": 1.5
+  },
+  {
+    "id": "eu_api_003",
+    "scenario_id": "eu_api_degradation",
+    "difficulty": "hard",
+    "ticket": {
+      "title": "Latency regression detected",
+      "description": "Automated monitoring detected p99 latency increase on api-gateway. Current p99: 3800ms (baseline: 150ms). No customer complaints yet but it's been trending up for the last 45 minutes.",
+      "reporter": "monitoring-bot",
+      "severity": "P3",
+      "timestamp": "2024-01-15T14:50:00Z"
+    },
+    "expected": {
+      "root_cause": "N+1 query in ProjectService.getProjectsForUser() at line 50-53. GDPR filtering loop introduced in v2.3.1 (DEPLOY-PS-042). Only EU traffic is affected — the p99 is dominated by slow EU requests while p50 shows moderate increase because US/AP traffic is normal.",
+      "affected_services": ["api-gateway", "project-service"],
+      "recommended_actions": [
+        {"tool": "rollback_deployment", "args": {"service_name": "project-service", "target_version": "v2.3.0"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P2", "affected_services": ["project-service"]}},
+        {"tool": "page_oncall", "args": {"team_name": "core-product-oncall", "severity": "P2"}}
+      ],
+      "severity_assessment": "P2",
+      "customer_impact": "EU enterprise customers with gdpr_strict_mode enabled",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "api-gateway", "metric_type": "latency_p99"},
+      "get_service_dependencies": {"service_name": "api-gateway"},
+      "get_deployment_diff": {"deploy_id": "DEPLOY-PS-042"}
+    },
+    "difficulty_multiplier": 2.5
+  },
+  {
+    "id": "eu_api_004",
+    "scenario_id": "eu_api_degradation",
+    "difficulty": "medium",
+    "ticket": {
+      "title": "Fjord Design AS — slow dashboard",
+      "description": "Customer Fjord Design AS (CUST-003, eu-north-1) reports their CloudDesk dashboard loads extremely slowly. They have about 45 active projects. Other EU customer Meridian Analytics is also complaining. US-based customer TechNova reports no issues.",
+      "reporter": "customer-success",
+      "severity": "P2",
+      "timestamp": "2024-01-15T15:00:00Z"
+    },
+    "expected": {
+      "root_cause": "N+1 query in ProjectService.getProjectsForUser(). EU customers (eu-north-1, eu-west-1) hit the GDPR filtering code path which calls filterProject() per project. Fjord Design with 45 projects = 45 extra DB queries per request. Meridian Analytics with 87 projects = 87 extra queries. TechNova in us-east-1 skips this path entirely.",
+      "affected_services": ["project-service", "api-gateway"],
+      "recommended_actions": [
+        {"tool": "rollback_deployment", "args": {"service_name": "project-service", "target_version": "v2.3.0"}}
+      ],
+      "severity_assessment": "P2",
+      "customer_impact": "EU customers: Fjord Design (CUST-003), Meridian Analytics (CUST-001), Quantum Financial (CUST-006), Nordic Health (CUST-009)",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_customer_info": {"customer_id": "CUST-003"},
+      "search_logs": {"service_name": "project-service"}
+    },
+    "difficulty_multiplier": 1.5
+  },
+  {
+    "id": "eu_api_005",
+    "scenario_id": "eu_api_degradation",
+    "difficulty": "hard",
+    "ticket": {
+      "title": "Redis config change might be causing issues",
+      "description": "Team lead noticed we updated Redis cache config today (changed eviction policy to volatile-lru). Around the same time, we're seeing elevated latency on the API gateway. Could the cache change be degrading performance? We should investigate if the new eviction policy is causing cache misses.",
+      "reporter": "platform-lead",
+      "severity": "P2",
+      "timestamp": "2024-01-15T14:55:00Z"
+    },
+    "expected": {
+      "root_cause": "The Redis config change (DEPLOY-RC-001) is a red herring. Redis metrics are healthy — memory stable, no errors, normal hit rates. The actual root cause is the N+1 query in ProjectService.getProjectsForUser() introduced by DEPLOY-PS-042 (v2.3.1). The Redis change was deployed at 12:30 but latency didn't start until 14:00 when the project-service deployment went live. The latency is region-specific (EU only), which wouldn't be caused by a global cache config change.",
+      "affected_services": ["project-service", "api-gateway"],
+      "recommended_actions": [
+        {"tool": "rollback_deployment", "args": {"service_name": "project-service", "target_version": "v2.3.0"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P2", "affected_services": ["project-service"]}}
+      ],
+      "severity_assessment": "P2",
+      "customer_impact": "EU enterprise customers with gdpr_strict_mode enabled",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "redis-cache"},
+      "get_deployment_history": {"service_name": "redis-cache"},
+      "get_deployment_history": {"service_name": "project-service"},
+      "get_deployment_diff": {"deploy_id": "DEPLOY-PS-042"}
+    },
+    "difficulty_multiplier": 2.5
+  },
+  {
+    "id": "db_disk_001",
+    "scenario_id": "database_disk_critical",
+    "difficulty": "easy",
+    "ticket": {
+      "title": "Disk space alert for project-db at 92%",
+      "description": "PagerDuty alert fired: project-db disk usage has crossed the 90% critical threshold and is currently at 92%. The disk has been growing steadily over the past 3 hours at approximately 2GB/hour. No customer-facing errors reported yet, but if disk fills completely the database will go read-only.",
+      "reporter": "monitoring-bot",
+      "severity": "P2",
+      "timestamp": "2024-01-20T11:00:00Z"
+    },
+    "expected": {
+      "root_cause": "Stale replication slot 'project_replica_slot' is preventing WAL cleanup. The slot is inactive (active=false) — the replica was decommissioned on 2024-01-17 but the replication slot was never dropped. WAL segments are accumulating at ~2GB/hour, driving disk from 82% to 92% over 3 hours. The schema migration DEPLOY-PS-041 yesterday is unrelated — it completed successfully and temp files were cleaned up.",
+      "affected_services": ["project-db"],
+      "recommended_actions": [
+        {"tool": "page_oncall", "args": {"team_name": "platform-oncall", "severity": "P2"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P2", "affected_services": ["project-db"]}}
+      ],
+      "severity_assessment": "P2",
+      "customer_impact": "No customer impact yet, but imminent risk of database going read-only if disk fills",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "project-db", "metric_type": "disk"},
+      "search_logs": {"service_name": "project-db"}
+    },
+    "difficulty_multiplier": 1.0
+  },
+  {
+    "id": "db_disk_002",
+    "scenario_id": "database_disk_critical",
+    "difficulty": "medium",
+    "ticket": {
+      "title": "Database team ran a migration yesterday, now disk is growing",
+      "description": "We deployed a schema migration to project-service yesterday (DEPLOY-PS-041) that adds an index on projects.workspace_id. Since then, we've noticed disk usage on project-db climbing steadily. It's now at 92%. Could the migration have created temp files or bloated the table? We need to investigate before the disk fills up.",
+      "reporter": "backend-team",
+      "severity": "P2",
+      "timestamp": "2024-01-20T10:30:00Z"
+    },
+    "expected": {
+      "root_cause": "The migration DEPLOY-PS-041 is a red herring — it only added an index using CREATE INDEX CONCURRENTLY and completed successfully. Any temporary files from the index build were cleaned up. The actual cause is a stale replication slot 'project_replica_slot' (active=false) that is preventing WAL segment cleanup. The replica was decommissioned on 2024-01-17 but the slot was never dropped. WAL has grown from ~40GB to ~55GB, pushing disk usage from 82% to 92%.",
+      "affected_services": ["project-db"],
+      "recommended_actions": [
+        {"tool": "page_oncall", "args": {"team_name": "platform-oncall", "severity": "P2"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P2", "affected_services": ["project-db"]}}
+      ],
+      "severity_assessment": "P2",
+      "customer_impact": "No customer impact yet, but imminent risk of database going read-only if disk fills",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_deployment_history": {"service_name": "project-service"},
+      "get_deployment_diff": {"deploy_id": "DEPLOY-PS-041"},
+      "get_service_metrics": {"service_name": "project-db", "metric_type": "disk"},
+      "search_logs": {"service_name": "project-db"}
+    },
+    "difficulty_multiplier": 1.5
+  },
+  {
+    "id": "db_disk_003",
+    "scenario_id": "database_disk_critical",
+    "difficulty": "hard",
+    "ticket": {
+      "title": "Project service seems slower than usual, should we investigate?",
+      "description": "A couple of engineers mentioned that project API responses feel slightly slower than normal today. No alerts have fired for the service itself and error rates look fine. Might be nothing, but wanted to flag it. Could be related to the migration we did yesterday.",
+      "reporter": "engineering-lead",
+      "severity": "P3",
+      "timestamp": "2024-01-20T10:45:00Z"
+    },
+    "expected": {
+      "root_cause": "Project service metrics are actually healthy — latency and error rates are normal. However, investigation reveals project-db disk usage is at 92% and climbing due to a stale replication slot 'project_replica_slot' (active=false) preventing WAL cleanup. The perceived slowness may be coincidental or psychological, but the real urgent issue is the disk filling up. The migration DEPLOY-PS-041 is unrelated. If unaddressed, the database will go read-only when disk fills, which would cause real service degradation.",
+      "affected_services": ["project-db"],
+      "recommended_actions": [
+        {"tool": "page_oncall", "args": {"team_name": "platform-oncall", "severity": "P2"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P2", "affected_services": ["project-db"]}}
+      ],
+      "severity_assessment": "P2",
+      "customer_impact": "No customer impact yet, but imminent risk of database going read-only if disk fills",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "project-service"},
+      "get_service_metrics": {"service_name": "project-db"},
+      "search_logs": {"service_name": "project-db"}
+    },
+    "difficulty_multiplier": 2.5
+  },
+  {
+    "id": "normal_001",
+    "scenario_id": "normal_operations",
+    "difficulty": "easy",
+    "ticket": {
+      "title": "HighLatency alert fired on api-gateway",
+      "description": "Alert ALT-20240128-001 triggered: HighLatency on api-gateway. p99_1m=420ms, threshold=300ms. Alert fired at 14:00 UTC. Please investigate.",
+      "reporter": "monitoring-bot",
+      "severity": "P3",
+      "timestamp": "2024-01-28T14:05:00Z"
+    },
+    "expected": {
+      "root_cause": "False alarm. The HighLatency alert is misconfigured — it checks 1-minute p99 latency (window=1m) instead of the standard 5-minute p99. A brief spike of 3 requests from a single client IP (198.51.100.44) on slow wifi pushed the 1-minute p99 to 420ms. The 5-minute p99 remained normal at ~150ms. All services are healthy with normal metrics.",
+      "affected_services": [],
+      "recommended_actions": [
+        {"tool": "create_incident_ticket", "args": {"title": "Fix HighLatency alert config — change window from 1m to 5m p99", "severity": "P4", "affected_services": ["api-gateway"]}}
+      ],
+      "severity_assessment": "P4",
+      "customer_impact": "None — client-side issue for a single user on slow wifi",
+      "is_false_alarm": true
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "api-gateway", "metric_type": "latency_p99"},
+      "search_logs": {"service_name": "api-gateway"}
+    },
+    "difficulty_multiplier": 1.0
+  },
+  {
+    "id": "normal_002",
+    "scenario_id": "normal_operations",
+    "difficulty": "medium",
+    "ticket": {
+      "title": "API gateway showing latency issues after auth-service deployment",
+      "description": "We're seeing a HighLatency alert on the API gateway (p99=420ms). Auth-service was deployed 30 minutes before the alert (DEPLOY-AS-015, v2.0.1 -> v2.0.2). Could the auth-service deployment have caused the latency spike? The deployment changed session TTL configuration.",
+      "reporter": "backend-team",
+      "severity": "P3",
+      "timestamp": "2024-01-28T14:10:00Z"
+    },
+    "expected": {
+      "root_cause": "False alarm. The auth-service deployment (DEPLOY-AS-015) is a red herring — it only changed session TTL from 24h to 12h in SessionStore.java, a minor config change with no impact on latency. Auth-service metrics are completely healthy post-deployment. The HighLatency alert itself is misconfigured: it uses a 1-minute p99 window instead of 5-minute p99. Three requests from a single client on slow wifi (IP 198.51.100.44) caused a brief 1-minute p99 spike to 420ms. The 5-minute p99 never exceeded ~150ms.",
+      "affected_services": [],
+      "recommended_actions": [
+        {"tool": "create_incident_ticket", "args": {"title": "Fix HighLatency alert config — change window from 1m to 5m p99", "severity": "P4", "affected_services": ["api-gateway"]}}
+      ],
+      "severity_assessment": "P4",
+      "customer_impact": "None — no real incident occurred",
+      "is_false_alarm": true
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "auth-service"},
+      "get_deployment_diff": {"deploy_id": "DEPLOY-AS-015"},
+      "get_service_metrics_2": {"service_name": "api-gateway", "metric_type": "latency_p99"}
+    },
+    "difficulty_multiplier": 1.5
+  },
+  {
+    "id": "normal_003",
+    "scenario_id": "normal_operations",
+    "difficulty": "hard",
+    "ticket": {
+      "title": "Customer reported slow loading, latency alert on gateway, auth-service recently deployed",
+      "description": "A customer reported slow page loading around 14:00 UTC. We also have a HighLatency alert (p99=420ms) on the API gateway that fired at the same time. Auth-service was deployed at 13:30 (DEPLOY-AS-015, session TTL change). Please investigate the root cause and take necessary action to resolve the issue. If a rollback or restart is needed, go ahead.",
+      "reporter": "support-team",
+      "severity": "P2",
+      "timestamp": "2024-01-28T14:15:00Z"
+    },
+    "expected": {
+      "root_cause": "False alarm — no action needed beyond fixing the alert configuration. The customer's slow loading was a client-side wifi issue (3 requests from single IP 198.51.100.44 with ~400ms latency). The HighLatency alert is misconfigured with a 1-minute p99 window instead of the standard 5-minute window, making it trigger on transient per-client blips. The actual 5-minute p99 remained steady at ~150ms. All service metrics (cpu, memory, error_rate, request_rate, latency) are normal across api-gateway, auth-service, project-service, and task-service. The auth-service deployment (DEPLOY-AS-015) is unrelated — it only changed session TTL from 24h to 12h, and auth-service health checks show UP throughout. No rollback or restart is warranted.",
+      "affected_services": [],
+      "recommended_actions": [
+        {"tool": "create_incident_ticket", "args": {"title": "Fix HighLatency alert config — change window from 1m to 5m p99", "severity": "P4", "affected_services": ["api-gateway"]}}
+      ],
+      "severity_assessment": "P4",
+      "customer_impact": "Single customer experienced slow loading due to their own network conditions",
+      "is_false_alarm": true
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "api-gateway"},
+      "search_logs": {"service_name": "api-gateway"},
+      "get_deployment_history": {"service_name": "auth-service"},
+      "get_deployment_diff": {"deploy_id": "DEPLOY-AS-015"},
+      "get_service_metrics_2": {"service_name": "auth-service"}
+    },
+    "difficulty_multiplier": 2.5
+  },
+  {
+    "id": "cascade_001",
+    "scenario_id": "cascading_postgres",
+    "difficulty": "medium",
+    "ticket": {
+      "title": "Task service returning 503 errors intermittently",
+      "description": "We're seeing intermittent 503 errors from task-service. About 30% of requests are failing. Started around 09:45 today. Task creation and updates are affected. The webhook integration team also reports their GitHub webhooks are piling up.",
+      "reporter": "backend-team",
+      "severity": "P1",
+      "timestamp": "2024-01-25T10:15:00Z"
+    },
+    "expected": {
+      "root_cause": "Connection pool exhaustion in task-service caused by a connection leak in TaskRepository.findTasksWithCustomFilter() (TaskRepository.java lines 95-98). The connection.close() at line 102 is outside the try-catch block — when an exception occurs at line 98, the RuntimeException is thrown and the connection is never closed. Under normal load this leak is negligible, but a spike in webhook traffic from GitHub integrations starting at 09:00 increased calls to findTasksWithCustomFilter by ~10x, causing the leak rate to exceed pool recovery. This is a multi-cause failure: connection leak (latent bug) + traffic spike (trigger).",
+      "affected_services": ["task-service", "project-service", "notification-service", "task-db"],
+      "recommended_actions": [
+        {"tool": "restart_service", "args": {"service_name": "task-service"}},
+        {"tool": "scale_service", "args": {"service_name": "task-service", "replicas": 6}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P1", "affected_services": ["task-service", "project-service", "notification-service"]}},
+        {"tool": "page_oncall", "args": {"team_name": "core-product-oncall", "severity": "P1"}}
+      ],
+      "severity_assessment": "P1",
+      "customer_impact": "All customers affected — task operations failing, project validation failing, notifications delayed",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "task-service", "metric_type": "error_rate"},
+      "search_logs": {"service_name": "task-service", "log_level": "ERROR"},
+      "get_service_dependencies": {"service_name": "task-service"}
+    },
+    "difficulty_multiplier": 1.5
+  },
+  {
+    "id": "cascade_002",
+    "scenario_id": "cascading_postgres",
+    "difficulty": "hard",
+    "ticket": {
+      "title": "Multiple services having issues — project creation failing and notifications delayed",
+      "description": "Several things seem broken at once: (1) Project creation is intermittently failing with 503s, (2) Task updates return errors, (3) Email notifications are severely delayed (queue depth over 2000). Not clear if these are related. Search seems unaffected. Started noticing issues around 10:00-10:15.",
+      "reporter": "engineering-lead",
+      "severity": "P1",
+      "timestamp": "2024-01-25T10:30:00Z"
+    },
+    "expected": {
+      "root_cause": "This is a cascading failure originating from task-service. Root cause: connection leak in TaskRepository.findTasksWithCustomFilter() (line 95-98) combined with webhook traffic spike at 09:00. The cascade path: task-service pool exhausted (09:45) → task-service returns 503 → project-service fails because it calls task-service for validation (10:00) → notification-service fails because it depends on both task-service and project-service (10:15). The search-service CPU spike at 09:45 is a red herring — it's an unrelated re-indexing job that completed normally.",
+      "affected_services": ["task-service", "project-service", "notification-service"],
+      "recommended_actions": [
+        {"tool": "restart_service", "args": {"service_name": "task-service"}},
+        {"tool": "page_oncall", "args": {"team_name": "core-product-oncall", "severity": "P1"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P1", "affected_services": ["task-service", "project-service", "notification-service"]}}
+      ],
+      "severity_assessment": "P1",
+      "customer_impact": "All customers — task operations, project creation, and notifications are impacted",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_service_dependencies": {"service_name": "project-service"},
+      "get_service_dependencies": {"service_name": "task-service"},
+      "search_logs": {"service_name": "task-service"},
+      "get_service_metrics": {"service_name": "task-service"}
+    },
+    "difficulty_multiplier": 2.5
+  },
+  {
+    "id": "cascade_003",
+    "scenario_id": "cascading_postgres",
+    "difficulty": "hard",
+    "ticket": {
+      "title": "Search service CPU spiked, could be related to other issues we're seeing",
+      "description": "Search service CPU jumped to 70% around 09:45. Around the same time, we started seeing errors in other services too. Could the search service be causing problems for the rest of the platform? We also deployed a webhook processing update to task-service 3 days ago (DEPLOY-TS-023) — could that be related?",
+      "reporter": "platform-team",
+      "severity": "P2",
+      "timestamp": "2024-01-25T10:20:00Z"
+    },
+    "expected": {
+      "root_cause": "The search-service CPU spike is a red herring — it was caused by a scheduled re-indexing job that completed normally at 10:00. Search service has no dependencies on task-service or project-service, and its metrics show zero errors. The actual root cause is in task-service: connection leak in TaskRepository.findTasksWithCustomFilter() introduced by DEPLOY-TS-023, triggered by webhook traffic spike. The cascade: task-service → project-service → notification-service. The timing correlation with search CPU is coincidental.",
+      "affected_services": ["task-service", "project-service", "notification-service"],
+      "recommended_actions": [
+        {"tool": "restart_service", "args": {"service_name": "task-service"}},
+        {"tool": "page_oncall", "args": {"team_name": "core-product-oncall", "severity": "P1"}},
+        {"tool": "create_incident_ticket", "args": {"severity": "P1", "affected_services": ["task-service", "project-service", "notification-service"]}}
+      ],
+      "severity_assessment": "P1",
+      "customer_impact": "All customers — core functionality impaired",
+      "is_false_alarm": false
+    },
+    "expected_tool_args": {
+      "get_service_metrics": {"service_name": "search-service", "metric_type": "cpu"},
+      "get_service_dependencies": {"service_name": "search-service"},
+      "search_logs": {"service_name": "task-service"},
+      "get_deployment_diff": {"deploy_id": "DEPLOY-TS-023"}
+    },
+    "difficulty_multiplier": 2.5
+  }
+]

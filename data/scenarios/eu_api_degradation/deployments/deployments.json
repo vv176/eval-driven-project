@@ -1,0 +1,57 @@
+[
+  {
+    "deploy_id": "DEPLOY-PS-042",
+    "service": "project-service",
+    "timestamp": "2024-01-15T13:45:00Z",
+    "version_from": "v2.3.0",
+    "version_to": "v2.3.1",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4521: Add GDPR compliance filtering for EU project listings",
+    "status": "SUCCESS",
+    "rollback_target": "v2.3.0"
+  },
+  {
+    "deploy_id": "DEPLOY-RC-001",
+    "service": "redis-cache",
+    "timestamp": "2024-01-15T12:30:00Z",
+    "version_from": "config-v3",
+    "version_to": "config-v4",
+    "deployer": "platform-team",
+    "message": "Update Redis eviction policy to volatile-lru for better cache hit rate",
+    "status": "SUCCESS",
+    "rollback_target": "config-v3"
+  },
+  {
+    "deploy_id": "DEPLOY-TS-018",
+    "service": "task-service",
+    "timestamp": "2024-01-12T09:15:00Z",
+    "version_from": "v1.8.3",
+    "version_to": "v1.8.4",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4498: Fix webhook retry logic for failed deliveries",
+    "status": "SUCCESS",
+    "rollback_target": "v1.8.3"
+  },
+  {
+    "deploy_id": "DEPLOY-AG-029",
+    "service": "api-gateway",
+    "timestamp": "2024-01-10T16:30:00Z",
+    "version_from": "v3.1.0",
+    "version_to": "v3.1.1",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4485: Add request tracing headers for distributed tracing",
+    "status": "SUCCESS",
+    "rollback_target": "v3.1.0"
+  },
+  {
+    "deploy_id": "DEPLOY-AS-011",
+    "service": "auth-service",
+    "timestamp": "2024-01-09T11:00:00Z",
+    "version_from": "v2.0.4",
+    "version_to": "v2.0.5",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4472: Increase session token expiry from 1h to 4h",
+    "status": "SUCCESS",
+    "rollback_target": "v2.0.4"
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "id": "eu_api_degradation",
+  "name": "EU API Latency Degradation",
+  "difficulty": "medium",
+  "description": "EU customers are reporting slow project loading times. Latency has increased significantly for EU-region API calls, while US and AP regions are unaffected.",
+  "timeline": {
+    "incident_start": "2024-01-15T14:00:00Z",
+    "first_alert": "2024-01-15T14:15:00Z",
+    "first_customer_report": "2024-01-15T14:30:00Z",
+    "scenario_snapshot_time": "2024-01-15T15:00:00Z"
+  },
+  "root_cause": {
+    "summary": "N+1 query bug in ProjectService.getProjectsForUser() — calls GdprDataFilter.filterProject() per project in a loop instead of using the batch filterProjects() method. Each call executes a separate SQL query against gdpr_audit_log table.",
+    "component": "project-service",
+    "file": "ProjectService.java",
+    "line_range": "50-53",
+    "mechanism": "The for loop at line 50 iterates over all projects and calls gdprDataFilter.filterProject(project) at line 51, which triggers checkComplianceStatus() at GdprDataFilter.java:73, executing an individual SQL query per project. A user with 50 projects generates 50 extra DB queries per request. The batch method filterProjects() at GdprDataFilter.java:53 exists and uses a single IN query but is not called.",
+    "trigger": "Deployment v2.3.1 of project-service at 2024-01-15T13:45:00Z introduced this code path. It only affects EU regions because the N+1 loop is inside an if-block checking EU_REGIONS at ProjectService.java:47.",
+    "why_not_caught": "Dev/staging has <5 projects per user, so the N+1 pattern was invisible. Production EU enterprise customers have 50-200 projects per user."
+  },
+  "red_herring": {
+    "description": "Redis config change deployed to redis-cache at 2024-01-15T12:30:00Z — updated maxmemory-policy from 'allkeys-lru' to 'volatile-lru'. This deployment shows up in timeline but is unrelated to the latency issue. Redis metrics are healthy.",
+    "deploy_id": "DEPLOY-RC-001"
+  },
+  "affected_services": ["api-gateway", "project-service"],
+  "affected_infrastructure": ["project-db"],
+  "affected_customers": ["CUST-001", "CUST-003", "CUST-006", "CUST-009"],
+  "unaffected_customers": ["CUST-002", "CUST-004", "CUST-005", "CUST-007", "CUST-008", "CUST-010"],
+  "correct_severity": "P2",
+  "is_false_alarm": false,
+  "recommended_actions": [
+    {"tool": "rollback_deployment", "args": {"service_name": "project-service", "target_version": "v2.3.0"}},
+    {"tool": "create_incident_ticket", "args": {"title": "EU API latency degradation — N+1 query in GDPR filter", "severity": "P2", "affected_services": ["project-service"]}}
+  ],
+  "services_status": {
+    "api-gateway": {"status": "healthy", "version": "v1.8.2"},
+    "project-service": {"status": "degraded", "version": "v2.3.1"},
+    "task-service": {"status": "healthy", "version": "v3.1.0"},
+    "notification-service": {"status": "healthy", "version": "v1.5.3"},
+    "auth-service": {"status": "healthy", "version": "v2.0.1"},
+    "search-service": {"status": "healthy", "version": "v1.2.0"}
+  }
+}

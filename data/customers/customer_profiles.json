@@ -1,0 +1,134 @@
+{
+  "customers": {
+    "CUST-001": {
+      "name": "Meridian Analytics GmbH",
+      "region": "eu-west-1",
+      "plan": "enterprise",
+      "account_tier": "platinum",
+      "feature_flags": {
+        "gdpr_strict_mode": true,
+        "advanced_automations": true,
+        "beta_search_v2": false
+      },
+      "employee_count": 2500,
+      "primary_contact": "Hans Mueller"
+    },
+    "CUST-002": {
+      "name": "TechNova Inc.",
+      "region": "us-east-1",
+      "plan": "enterprise",
+      "account_tier": "gold",
+      "feature_flags": {
+        "gdpr_strict_mode": false,
+        "advanced_automations": true,
+        "beta_search_v2": true
+      },
+      "employee_count": 800,
+      "primary_contact": "Sarah Chen"
+    },
+    "CUST-003": {
+      "name": "Fjord Design AS",
+      "region": "eu-north-1",
+      "plan": "business",
+      "account_tier": "silver",
+      "feature_flags": {
+        "gdpr_strict_mode": true,
+        "advanced_automations": false,
+        "beta_search_v2": false
+      },
+      "employee_count": 150,
+      "primary_contact": "Erik Johansen"
+    },
+    "CUST-004": {
+      "name": "Sakura Digital Co.",
+      "region": "ap-northeast-1",
+      "plan": "enterprise",
+      "account_tier": "gold",
+      "feature_flags": {
+        "gdpr_strict_mode": false,
+        "advanced_automations": true,
+        "beta_search_v2": false
+      },
+      "employee_count": 3200,
+      "primary_contact": "Yuki Tanaka"
+    },
+    "CUST-005": {
+      "name": "BrightPath Education",
+      "region": "us-west-2",
+      "plan": "business",
+      "account_tier": "silver",
+      "feature_flags": {
+        "gdpr_strict_mode": false,
+        "advanced_automations": false,
+        "beta_search_v2": true
+      },
+      "employee_count": 400,
+      "primary_contact": "Maria Rodriguez"
+    },
+    "CUST-006": {
+      "name": "Quantum Financial Services",
+      "region": "eu-west-1",
+      "plan": "enterprise",
+      "account_tier": "platinum",
+      "feature_flags": {
+        "gdpr_strict_mode": true,
+        "advanced_automations": true,
+        "beta_search_v2": false
+      },
+      "employee_count": 5000,
+      "primary_contact": "Pierre Dubois"
+    },
+    "CUST-007": {
+      "name": "GreenLeaf Startups",
+      "region": "us-east-1",
+      "plan": "starter",
+      "account_tier": "bronze",
+      "feature_flags": {
+        "gdpr_strict_mode": false,
+        "advanced_automations": false,
+        "beta_search_v2": false
+      },
+      "employee_count": 25,
+      "primary_contact": "Alex Kim"
+    },
+    "CUST-008": {
+      "name": "Atlas Logistics Pty",
+      "region": "ap-southeast-2",
+      "plan": "business",
+      "account_tier": "gold",
+      "feature_flags": {
+        "gdpr_strict_mode": false,
+        "advanced_automations": true,
+        "beta_search_v2": true
+      },
+      "employee_count": 1200,
+      "primary_contact": "James O'Brien"
+    },
+    "CUST-009": {
+      "name": "Nordic Health Systems",
+      "region": "eu-north-1",
+      "plan": "enterprise",
+      "account_tier": "platinum",
+      "feature_flags": {
+        "gdpr_strict_mode": true,
+        "advanced_automations": true,
+        "beta_search_v2": false
+      },
+      "employee_count": 1800,
+      "primary_contact": "Anna Lindqvist"
+    },
+    "CUST-010": {
+      "name": "Pinnacle Media Group",
+      "region": "us-west-2",
+      "plan": "enterprise",
+      "account_tier": "gold",
+      "feature_flags": {
+        "gdpr_strict_mode": false,
+        "advanced_automations": true,
+        "beta_search_v2": true
+      },
+      "employee_count": 650,
+      "primary_contact": "David Park"
+    }
+  }
+}

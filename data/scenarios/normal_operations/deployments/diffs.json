@@ -1,0 +1,41 @@
+[
+  {
+    "deploy_id": "DEPLOY-AS-015",
+    "commit_sha": "d4f8e21",
+    "author": "security-bot",
+    "commit_message": "JIRA-4602: Update session TTL from 24h to 12h per security review",
+    "files_changed": [
+      {
+        "path": "auth-service/SessionStore.java",
+        "change_type": "modified",
+        "diff": "--- a/auth-service/SessionStore.java\n+++ b/auth-service/SessionStore.java\n@@ -18,7 +18,7 @@ public class SessionStore {\n \n-    private static final int SESSION_TTL_HOURS = 24;\n+    private static final int SESSION_TTL_HOURS = 12;\n \n     private final RedisTemplate<String, Session> redisTemplate;\n"
+      }
+    ]
+  },
+  {
+    "deploy_id": "DEPLOY-TS-019",
+    "commit_sha": "a1c3b55",
+    "author": "rahul.dev",
+    "commit_message": "JIRA-4580: Add bulk task assignment endpoint",
+    "files_changed": [
+      {
+        "path": "task-service/TaskController.java",
+        "change_type": "modified",
+        "diff": "--- a/task-service/TaskController.java\n+++ b/task-service/TaskController.java\n@@ -45,6 +45,15 @@ public class TaskController {\n         return ResponseEntity.ok(taskService.getTaskById(taskId));\n     }\n \n+    @PostMapping(\"/bulk-assign\")\n+    public ResponseEntity<BulkAssignResponse> bulkAssignTasks(\n+            @RequestBody @Valid final BulkAssignRequest request) {\n+        log.info(\"Bulk assigning {} tasks to user={}\", request.getTaskIds().size(), request.getAssigneeId());\n+        final BulkAssignResponse response = taskService.bulkAssignTasks(request);\n+        return ResponseEntity.ok(response);\n+    }\n+\n     @PutMapping(\"/{taskId}\")\n     public ResponseEntity<TaskResponseDto> updateTask("
+      }
+    ]
+  },
+  {
+    "deploy_id": "DEPLOY-AG-030",
+    "commit_sha": "b7e9f12",
+    "author": "alex.chen",
+    "commit_message": "JIRA-4555: Add request timeout configuration for upstream services",
+    "files_changed": [
+      {
+        "path": "api-gateway/UpstreamConfig.java",
+        "change_type": "modified",
+        "diff": "--- a/api-gateway/UpstreamConfig.java\n+++ b/api-gateway/UpstreamConfig.java\n@@ -22,6 +22,8 @@ public class UpstreamConfig {\n \n     private static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000;\n     private static final int DEFAULT_READ_TIMEOUT_MS = 30000;\n+    private static final int DEFAULT_WRITE_TIMEOUT_MS = 30000;\n+    private static final int DEFAULT_IDLE_TIMEOUT_MS = 60000;\n \n     @Bean\n     public WebClient.Builder webClientBuilder() {\n@@ -29,6 +31,8 @@ public class UpstreamConfig {\n                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, DEFAULT_CONNECT_TIMEOUT_MS)\n                 .doOnConnected(conn -> conn\n                         .addHandlerLast(new ReadTimeoutHandler(DEFAULT_READ_TIMEOUT_MS, TimeUnit.MILLISECONDS))\n+                        .addHandlerLast(new WriteTimeoutHandler(DEFAULT_WRITE_TIMEOUT_MS, TimeUnit.MILLISECONDS))\n+                        .addHandlerLast(new IdleStateHandler(DEFAULT_IDLE_TIMEOUT_MS, 0, 0, TimeUnit.MILLISECONDS))\n                 );"
+      }
+    ]
+  }
+]

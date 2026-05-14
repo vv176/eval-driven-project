@@ -1,0 +1,35 @@
+[
+  {
+    "deploy_id": "DEPLOY-AS-015",
+    "service": "auth-service",
+    "timestamp": "2024-01-28T13:30:00Z",
+    "version_from": "v2.0.1",
+    "version_to": "v2.0.2",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4602: Update session TTL from 24h to 12h per security review",
+    "status": "SUCCESS",
+    "rollback_target": "v2.0.1"
+  },
+  {
+    "deploy_id": "DEPLOY-TS-019",
+    "service": "task-service",
+    "timestamp": "2024-01-25T10:00:00Z",
+    "version_from": "v3.0.9",
+    "version_to": "v3.1.0",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4580: Add bulk task assignment endpoint",
+    "status": "SUCCESS",
+    "rollback_target": "v3.0.9"
+  },
+  {
+    "deploy_id": "DEPLOY-AG-030",
+    "service": "api-gateway",
+    "timestamp": "2024-01-22T14:15:00Z",
+    "version_from": "v1.8.1",
+    "version_to": "v1.8.2",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4555: Add request timeout configuration for upstream services",
+    "status": "SUCCESS",
+    "rollback_target": "v1.8.1"
+  }
+]

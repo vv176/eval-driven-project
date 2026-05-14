@@ -1,0 +1,41 @@
+[
+  {
+    "deploy_id": "DEPLOY-PS-041",
+    "commit_sha": "f7a3c12",
+    "author": "alex.chen",
+    "commit_message": "JIRA-4510: Add index on projects.workspace_id for query optimization",
+    "files_changed": [
+      {
+        "path": "project-service/src/main/resources/db/migration/V24__add_workspace_id_index.sql",
+        "change_type": "added",
+        "diff": "--- /dev/null\n+++ b/project-service/src/main/resources/db/migration/V24__add_workspace_id_index.sql\n@@ -0,0 +1,8 @@\n+-- Add index on workspace_id for faster workspace-scoped queries\n+-- This supports the new workspace dashboard which lists all projects in a workspace\n+\n+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_projects_workspace_id\n+    ON projects (workspace_id);\n+\n+-- Analyze the table to update query planner statistics\n+ANALYZE projects;"
+      }
+    ]
+  },
+  {
+    "deploy_id": "DEPLOY-TS-017",
+    "commit_sha": "d2e8b44",
+    "author": "priya.sharma",
+    "commit_message": "JIRA-4502: Add bulk task update endpoint for workspace migrations",
+    "files_changed": [
+      {
+        "path": "task-service/TaskController.java",
+        "change_type": "modified",
+        "diff": "--- a/task-service/TaskController.java\n+++ b/task-service/TaskController.java\n@@ -58,6 +58,18 @@ public class TaskController {\n         return ResponseEntity.ok(taskService.updateTask(taskId, request));\n     }\n \n+    @PutMapping(\"/bulk\")\n+    public ResponseEntity<BulkUpdateResponseDto> bulkUpdateTasks(\n+            @RequestBody @Valid final BulkTaskUpdateRequest request) {\n+        log.info(\"Bulk update request for {} tasks in workspace={}\",\n+                request.getTaskIds().size(), request.getWorkspaceId());\n+        if (request.getTaskIds().size() > 500) {\n+            throw new BadRequestException(\"Bulk update limited to 500 tasks per request\");\n+        }\n+        final var result = taskService.bulkUpdateTasks(request);\n+        return ResponseEntity.ok(result);\n+    }\n+\n     @DeleteMapping(\"/{taskId}\")\n     public ResponseEntity<Void> deleteTask(@PathVariable final String taskId) {"
+      }
+    ]
+  },
+  {
+    "deploy_id": "DEPLOY-NS-008",
+    "commit_sha": "a1b9e67",
+    "author": "rahul.dev",
+    "commit_message": "JIRA-4495: Fix email template rendering for project invitations",
+    "files_changed": [
+      {
+        "path": "notification-service/EmailClient.java",
+        "change_type": "modified",
+        "diff": "--- a/notification-service/EmailClient.java\n+++ b/notification-service/EmailClient.java\n@@ -31,7 +31,9 @@ public class EmailClient {\n     public void sendProjectInvitation(final String recipientEmail, final ProjectInviteContext context) {\n         log.info(\"Sending project invitation to={} project={}\", recipientEmail, context.getProjectName());\n-        final String body = templateEngine.process(\"project-invite\", context.toMap());\n+        final Map<String, Object> templateVars = context.toMap();\n+        templateVars.put(\"inviterDisplayName\", context.getInviterName());\n+        final String body = templateEngine.process(\"project-invite\", templateVars);\n         sendEmail(recipientEmail, \"You've been invited to \" + context.getProjectName(), body);\n     }"
+      }
+    ]
+  }
+]

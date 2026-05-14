@@ -1,0 +1,35 @@
+[
+  {
+    "deploy_id": "DEPLOY-PS-041",
+    "service": "project-service",
+    "timestamp": "2024-01-19T14:00:00Z",
+    "version_from": "v2.3.0",
+    "version_to": "v2.3.1",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4510: Add index on projects.workspace_id for query optimization",
+    "status": "SUCCESS",
+    "rollback_target": "v2.3.0"
+  },
+  {
+    "deploy_id": "DEPLOY-TS-017",
+    "service": "task-service",
+    "timestamp": "2024-01-18T10:30:00Z",
+    "version_from": "v3.0.9",
+    "version_to": "v3.1.0",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4502: Add bulk task update endpoint for workspace migrations",
+    "status": "SUCCESS",
+    "rollback_target": "v3.0.9"
+  },
+  {
+    "deploy_id": "DEPLOY-NS-008",
+    "service": "notification-service",
+    "timestamp": "2024-01-16T16:15:00Z",
+    "version_from": "v1.5.2",
+    "version_to": "v1.5.3",
+    "deployer": "jenkins-ci",
+    "message": "JIRA-4495: Fix email template rendering for project invitations",
+    "status": "SUCCESS",
+    "rollback_target": "v1.5.2"
+  }
+]

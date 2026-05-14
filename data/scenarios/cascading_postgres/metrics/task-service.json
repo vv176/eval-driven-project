@@ -1,0 +1,932 @@
+[
+  {
+    "service": "task-service",
+    "metric_type": "cpu",
+    "unit": "percent",
+    "data": [
+      {
+        "timestamp": "2024-01-25T08:00:00Z",
+        "value": 28.3
+      },
+      {
+        "timestamp": "2024-01-25T08:05:00Z",
+        "value": 29.1
+      },
+      {
+        "timestamp": "2024-01-25T08:10:00Z",
+        "value": 27.8
+      },
+      {
+        "timestamp": "2024-01-25T08:15:00Z",
+        "value": 30.2
+      },
+      {
+        "timestamp": "2024-01-25T08:20:00Z",
+        "value": 28.9
+      },
+      {
+        "timestamp": "2024-01-25T08:25:00Z",
+        "value": 29.5
+      },
+      {
+        "timestamp": "2024-01-25T08:30:00Z",
+        "value": 31.0
+      },
+      {
+        "timestamp": "2024-01-25T08:35:00Z",
+        "value": 29.7
+      },
+      {
+        "timestamp": "2024-01-25T08:40:00Z",
+        "value": 30.4
+      },
+      {
+        "timestamp": "2024-01-25T08:45:00Z",
+        "value": 28.6
+      },
+      {
+        "timestamp": "2024-01-25T08:50:00Z",
+        "value": 29.3
+      },
+      {
+        "timestamp": "2024-01-25T08:55:00Z",
+        "value": 30.8
+      },
+      {
+        "timestamp": "2024-01-25T09:00:00Z",
+        "value": 35.2
+      },
+      {
+        "timestamp": "2024-01-25T09:05:00Z",
+        "value": 39.8
+      },
+      {
+        "timestamp": "2024-01-25T09:10:00Z",
+        "value": 43.1
+      },
+      {
+        "timestamp": "2024-01-25T09:15:00Z",
+        "value": 47.6
+      },
+      {
+        "timestamp": "2024-01-25T09:20:00Z",
+        "value": 52.3
+      },
+      {
+        "timestamp": "2024-01-25T09:25:00Z",
+        "value": 58.9
+      },
+      {
+        "timestamp": "2024-01-25T09:30:00Z",
+        "value": 64.2
+      },
+      {
+        "timestamp": "2024-01-25T09:35:00Z",
+        "value": 70.5
+      },
+      {
+        "timestamp": "2024-01-25T09:40:00Z",
+        "value": 76.1
+      },
+      {
+        "timestamp": "2024-01-25T09:45:00Z",
+        "value": 82.4
+      },
+      {
+        "timestamp": "2024-01-25T09:50:00Z",
+        "value": 85.7
+      },
+      {
+        "timestamp": "2024-01-25T09:55:00Z",
+        "value": 84.3
+      },
+      {
+        "timestamp": "2024-01-25T10:00:00Z",
+        "value": 83.1
+      },
+      {
+        "timestamp": "2024-01-25T10:05:00Z",
+        "value": 84.8
+      },
+      {
+        "timestamp": "2024-01-25T10:10:00Z",
+        "value": 82.6
+      },
+      {
+        "timestamp": "2024-01-25T10:15:00Z",
+        "value": 85.2
+      },
+      {
+        "timestamp": "2024-01-25T10:20:00Z",
+        "value": 83.9
+      },
+      {
+        "timestamp": "2024-01-25T10:25:00Z",
+        "value": 84.5
+      },
+      {
+        "timestamp": "2024-01-25T10:30:00Z",
+        "value": 82.8
+      },
+      {
+        "timestamp": "2024-01-25T10:35:00Z",
+        "value": 85.1
+      },
+      {
+        "timestamp": "2024-01-25T10:40:00Z",
+        "value": 83.4
+      },
+      {
+        "timestamp": "2024-01-25T10:45:00Z",
+        "value": 84.7
+      },
+      {
+        "timestamp": "2024-01-25T10:50:00Z",
+        "value": 83.2
+      },
+      {
+        "timestamp": "2024-01-25T10:55:00Z",
+        "value": 84.9
+      },
+      {
+        "timestamp": "2024-01-25T11:00:00Z",
+        "value": 85.3
+      }
+    ]
+  },
+  {
+    "service": "task-service",
+    "metric_type": "memory",
+    "unit": "percent",
+    "data": [
+      {
+        "timestamp": "2024-01-25T08:00:00Z",
+        "value": 52.1
+      },
+      {
+        "timestamp": "2024-01-25T08:05:00Z",
+        "value": 53.4
+      },
+      {
+        "timestamp": "2024-01-25T08:10:00Z",
+        "value": 52.8
+      },
+      {
+        "timestamp": "2024-01-25T08:15:00Z",
+        "value": 54.0
+      },
+      {
+        "timestamp": "2024-01-25T08:20:00Z",
+        "value": 53.2
+      },
+      {
+        "timestamp": "2024-01-25T08:25:00Z",
+        "value": 54.5
+      },
+      {
+        "timestamp": "2024-01-25T08:30:00Z",
+        "value": 53.9
+      },
+      {
+        "timestamp": "2024-01-25T08:35:00Z",
+        "value": 54.1
+      },
+      {
+        "timestamp": "2024-01-25T08:40:00Z",
+        "value": 55.0
+      },
+      {
+        "timestamp": "2024-01-25T08:45:00Z",
+        "value": 54.3
+      },
+      {
+        "timestamp": "2024-01-25T08:50:00Z",
+        "value": 55.2
+      },
+      {
+        "timestamp": "2024-01-25T08:55:00Z",
+        "value": 54.8
+      },
+      {
+        "timestamp": "2024-01-25T09:00:00Z",
+        "value": 56.1
+      },
+      {
+        "timestamp": "2024-01-25T09:05:00Z",
+        "value": 57.3
+      },
+      {
+        "timestamp": "2024-01-25T09:10:00Z",
+        "value": 58.5
+      },
+      {
+        "timestamp": "2024-01-25T09:15:00Z",
+        "value": 59.8
+      },
+      {
+        "timestamp": "2024-01-25T09:20:00Z",
+        "value": 61.2
+      },
+      {
+        "timestamp": "2024-01-25T09:25:00Z",
+        "value": 62.9
+      },
+      {
+        "timestamp": "2024-01-25T09:30:00Z",
+        "value": 64.5
+      },
+      {
+        "timestamp": "2024-01-25T09:35:00Z",
+        "value": 66.1
+      },
+      {
+        "timestamp": "2024-01-25T09:40:00Z",
+        "value": 68.0
+      },
+      {
+        "timestamp": "2024-01-25T09:45:00Z",
+        "value": 70.3
+      },
+      {
+        "timestamp": "2024-01-25T09:50:00Z",
+        "value": 72.1
+      },
+      {
+        "timestamp": "2024-01-25T09:55:00Z",
+        "value": 73.5
+      },
+      {
+        "timestamp": "2024-01-25T10:00:00Z",
+        "value": 74.2
+      },
+      {
+        "timestamp": "2024-01-25T10:05:00Z",
+        "value": 74.8
+      },
+      {
+        "timestamp": "2024-01-25T10:10:00Z",
+        "value": 75.1
+      },
+      {
+        "timestamp": "2024-01-25T10:15:00Z",
+        "value": 74.6
+      },
+      {
+        "timestamp": "2024-01-25T10:20:00Z",
+        "value": 75.3
+      },
+      {
+        "timestamp": "2024-01-25T10:25:00Z",
+        "value": 74.9
+      },
+      {
+        "timestamp": "2024-01-25T10:30:00Z",
+        "value": 75.0
+      },
+      {
+        "timestamp": "2024-01-25T10:35:00Z",
+        "value": 74.7
+      },
+      {
+        "timestamp": "2024-01-25T10:40:00Z",
+        "value": 75.2
+      },
+      {
+        "timestamp": "2024-01-25T10:45:00Z",
+        "value": 74.4
+      },
+      {
+        "timestamp": "2024-01-25T10:50:00Z",
+        "value": 75.1
+      },
+      {
+        "timestamp": "2024-01-25T10:55:00Z",
+        "value": 74.8
+      },
+      {
+        "timestamp": "2024-01-25T11:00:00Z",
+        "value": 75.0
+      }
+    ]
+  },
+  {
+    "service": "task-service",
+    "metric_type": "request_rate",
+    "unit": "req_per_sec",
+    "data": [
+      {
+        "timestamp": "2024-01-25T08:00:00Z",
+        "value": 195.2
+      },
+      {
+        "timestamp": "2024-01-25T08:05:00Z",
+        "value": 201.3
+      },
+      {
+        "timestamp": "2024-01-25T08:10:00Z",
+        "value": 198.7
+      },
+      {
+        "timestamp": "2024-01-25T08:15:00Z",
+        "value": 204.1
+      },
+      {
+        "timestamp": "2024-01-25T08:20:00Z",
+        "value": 196.5
+      },
+      {
+        "timestamp": "2024-01-25T08:25:00Z",
+        "value": 202.8
+      },
+      {
+        "timestamp": "2024-01-25T08:30:00Z",
+        "value": 199.4
+      },
+      {
+        "timestamp": "2024-01-25T08:35:00Z",
+        "value": 205.2
+      },
+      {
+        "timestamp": "2024-01-25T08:40:00Z",
+        "value": 197.9
+      },
+      {
+        "timestamp": "2024-01-25T08:45:00Z",
+        "value": 203.6
+      },
+      {
+        "timestamp": "2024-01-25T08:50:00Z",
+        "value": 200.1
+      },
+      {
+        "timestamp": "2024-01-25T08:55:00Z",
+        "value": 198.3
+      },
+      {
+        "timestamp": "2024-01-25T09:00:00Z",
+        "value": 420.5
+      },
+      {
+        "timestamp": "2024-01-25T09:05:00Z",
+        "value": 538.2
+      },
+      {
+        "timestamp": "2024-01-25T09:10:00Z",
+        "value": 612.7
+      },
+      {
+        "timestamp": "2024-01-25T09:15:00Z",
+        "value": 685.3
+      },
+      {
+        "timestamp": "2024-01-25T09:20:00Z",
+        "value": 742.1
+      },
+      {
+        "timestamp": "2024-01-25T09:25:00Z",
+        "value": 789.6
+      },
+      {
+        "timestamp": "2024-01-25T09:30:00Z",
+        "value": 812.4
+      },
+      {
+        "timestamp": "2024-01-25T09:35:00Z",
+        "value": 798.5
+      },
+      {
+        "timestamp": "2024-01-25T09:40:00Z",
+        "value": 805.2
+      },
+      {
+        "timestamp": "2024-01-25T09:45:00Z",
+        "value": 790.8
+      },
+      {
+        "timestamp": "2024-01-25T09:50:00Z",
+        "value": 782.3
+      },
+      {
+        "timestamp": "2024-01-25T09:55:00Z",
+        "value": 775.1
+      },
+      {
+        "timestamp": "2024-01-25T10:00:00Z",
+        "value": 768.9
+      },
+      {
+        "timestamp": "2024-01-25T10:05:00Z",
+        "value": 755.4
+      },
+      {
+        "timestamp": "2024-01-25T10:10:00Z",
+        "value": 740.2
+      },
+      {
+        "timestamp": "2024-01-25T10:15:00Z",
+        "value": 725.8
+      },
+      {
+        "timestamp": "2024-01-25T10:20:00Z",
+        "value": 710.3
+      },
+      {
+        "timestamp": "2024-01-25T10:25:00Z",
+        "value": 698.7
+      },
+      {
+        "timestamp": "2024-01-25T10:30:00Z",
+        "value": 685.1
+      },
+      {
+        "timestamp": "2024-01-25T10:35:00Z",
+        "value": 672.4
+      },
+      {
+        "timestamp": "2024-01-25T10:40:00Z",
+        "value": 660.9
+      },
+      {
+        "timestamp": "2024-01-25T10:45:00Z",
+        "value": 648.2
+      },
+      {
+        "timestamp": "2024-01-25T10:50:00Z",
+        "value": 635.5
+      },
+      {
+        "timestamp": "2024-01-25T10:55:00Z",
+        "value": 622.8
+      },
+      {
+        "timestamp": "2024-01-25T11:00:00Z",
+        "value": 615.3
+      }
+    ]
+  },
+  {
+    "service": "task-service",
+    "metric_type": "error_rate",
+    "unit": "errors_per_sec",
+    "data": [
+      {
+        "timestamp": "2024-01-25T08:00:00Z",
+        "value": 0.1
+      },
+      {
+        "timestamp": "2024-01-25T08:05:00Z",
+        "value": 0.0
+      },
+      {
+        "timestamp": "2024-01-25T08:10:00Z",
+        "value": 0.1
+      },
+      {
+        "timestamp": "2024-01-25T08:15:00Z",
+        "value": 0.0
+      },
+      {
+        "timestamp": "2024-01-25T08:20:00Z",
+        "value": 0.1
+      },
+      {
+        "timestamp": "2024-01-25T08:25:00Z",
+        "value": 0.0
+      },
+      {
+        "timestamp": "2024-01-25T08:30:00Z",
+        "value": 0.0
+      },
+      {
+        "timestamp": "2024-01-25T08:35:00Z",
+        "value": 0.1
+      },
+      {
+        "timestamp": "2024-01-25T08:40:00Z",
+        "value": 0.0
+      },
+      {
+        "timestamp": "2024-01-25T08:45:00Z",
+        "value": 0.1
+      },
+      {
+        "timestamp": "2024-01-25T08:50:00Z",
+        "value": 0.0
+      },
+      {
+        "timestamp": "2024-01-25T08:55:00Z",
+        "value": 0.0
+      },
+      {
+        "timestamp": "2024-01-25T09:00:00Z",
+        "value": 0.3
+      },
+      {
+        "timestamp": "2024-01-25T09:05:00Z",
+        "value": 0.8
+      },
+      {
+        "timestamp": "2024-01-25T09:10:00Z",
+        "value": 1.5
+      },
+      {
+        "timestamp": "2024-01-25T09:15:00Z",
+        "value": 2.8
+      },
+      {
+        "timestamp": "2024-01-25T09:20:00Z",
+        "value": 4.2
+      },
+      {
+        "timestamp": "2024-01-25T09:25:00Z",
+        "value": 7.5
+      },
+      {
+        "timestamp": "2024-01-25T09:30:00Z",
+        "value": 12.3
+      },
+      {
+        "timestamp": "2024-01-25T09:35:00Z",
+        "value": 22.1
+      },
+      {
+        "timestamp": "2024-01-25T09:40:00Z",
+        "value": 38.7
+      },
+      {
+        "timestamp": "2024-01-25T09:45:00Z",
+        "value": 85.4
+      },
+      {
+        "timestamp": "2024-01-25T09:50:00Z",
+        "value": 112.8
+      },
+      {
+        "timestamp": "2024-01-25T09:55:00Z",
+        "value": 130.5
+      },
+      {
+        "timestamp": "2024-01-25T10:00:00Z",
+        "value": 142.3
+      },
+      {
+        "timestamp": "2024-01-25T10:05:00Z",
+        "value": 148.7
+      },
+      {
+        "timestamp": "2024-01-25T10:10:00Z",
+        "value": 145.2
+      },
+      {
+        "timestamp": "2024-01-25T10:15:00Z",
+        "value": 150.1
+      },
+      {
+        "timestamp": "2024-01-25T10:20:00Z",
+        "value": 147.8
+      },
+      {
+        "timestamp": "2024-01-25T10:25:00Z",
+        "value": 149.3
+      },
+      {
+        "timestamp": "2024-01-25T10:30:00Z",
+        "value": 146.5
+      },
+      {
+        "timestamp": "2024-01-25T10:35:00Z",
+        "value": 151.2
+      },
+      {
+        "timestamp": "2024-01-25T10:40:00Z",
+        "value": 148.9
+      },
+      {
+        "timestamp": "2024-01-25T10:45:00Z",
+        "value": 150.4
+      },
+      {
+        "timestamp": "2024-01-25T10:50:00Z",
+        "value": 147.1
+      },
+      {
+        "timestamp": "2024-01-25T10:55:00Z",
+        "value": 149.8
+      },
+      {
+        "timestamp": "2024-01-25T11:00:00Z",
+        "value": 151.5
+      }
+    ]
+  },
+  {
+    "service": "task-service",
+    "metric_type": "latency_p50",
+    "unit": "ms",
+    "data": [
+      {
+        "timestamp": "2024-01-25T08:00:00Z",
+        "value": 48.2
+      },
+      {
+        "timestamp": "2024-01-25T08:05:00Z",
+        "value": 51.3
+      },
+      {
+        "timestamp": "2024-01-25T08:10:00Z",
+        "value": 49.7
+      },
+      {
+        "timestamp": "2024-01-25T08:15:00Z",
+        "value": 52.1
+      },
+      {
+        "timestamp": "2024-01-25T08:20:00Z",
+        "value": 47.8
+      },
+      {
+        "timestamp": "2024-01-25T08:25:00Z",
+        "value": 50.4
+      },
+      {
+        "timestamp": "2024-01-25T08:30:00Z",
+        "value": 49.1
+      },
+      {
+        "timestamp": "2024-01-25T08:35:00Z",
+        "value": 53.2
+      },
+      {
+        "timestamp": "2024-01-25T08:40:00Z",
+        "value": 48.6
+      },
+      {
+        "timestamp": "2024-01-25T08:45:00Z",
+        "value": 51.8
+      },
+      {
+        "timestamp": "2024-01-25T08:50:00Z",
+        "value": 50.3
+      },
+      {
+        "timestamp": "2024-01-25T08:55:00Z",
+        "value": 49.5
+      },
+      {
+        "timestamp": "2024-01-25T09:00:00Z",
+        "value": 58.4
+      },
+      {
+        "timestamp": "2024-01-25T09:05:00Z",
+        "value": 72.1
+      },
+      {
+        "timestamp": "2024-01-25T09:10:00Z",
+        "value": 95.3
+      },
+      {
+        "timestamp": "2024-01-25T09:15:00Z",
+        "value": 128.7
+      },
+      {
+        "timestamp": "2024-01-25T09:20:00Z",
+        "value": 185.4
+      },
+      {
+        "timestamp": "2024-01-25T09:25:00Z",
+        "value": 310.2
+      },
+      {
+        "timestamp": "2024-01-25T09:30:00Z",
+        "value": 520.8
+      },
+      {
+        "timestamp": "2024-01-25T09:35:00Z",
+        "value": 845.3
+      },
+      {
+        "timestamp": "2024-01-25T09:40:00Z",
+        "value": 1250.6
+      },
+      {
+        "timestamp": "2024-01-25T09:45:00Z",
+        "value": 1980.4
+      },
+      {
+        "timestamp": "2024-01-25T09:50:00Z",
+        "value": 2100.7
+      },
+      {
+        "timestamp": "2024-01-25T09:55:00Z",
+        "value": 2050.3
+      },
+      {
+        "timestamp": "2024-01-25T10:00:00Z",
+        "value": 2180.1
+      },
+      {
+        "timestamp": "2024-01-25T10:05:00Z",
+        "value": 2090.5
+      },
+      {
+        "timestamp": "2024-01-25T10:10:00Z",
+        "value": 2150.8
+      },
+      {
+        "timestamp": "2024-01-25T10:15:00Z",
+        "value": 2120.3
+      },
+      {
+        "timestamp": "2024-01-25T10:20:00Z",
+        "value": 2080.7
+      },
+      {
+        "timestamp": "2024-01-25T10:25:00Z",
+        "value": 2140.2
+      },
+      {
+        "timestamp": "2024-01-25T10:30:00Z",
+        "value": 2100.9
+      },
+      {
+        "timestamp": "2024-01-25T10:35:00Z",
+        "value": 2160.4
+      },
+      {
+        "timestamp": "2024-01-25T10:40:00Z",
+        "value": 2110.1
+      },
+      {
+        "timestamp": "2024-01-25T10:45:00Z",
+        "value": 2130.6
+      },
+      {
+        "timestamp": "2024-01-25T10:50:00Z",
+        "value": 2090.3
+      },
+      {
+        "timestamp": "2024-01-25T10:55:00Z",
+        "value": 2150.8
+      },
+      {
+        "timestamp": "2024-01-25T11:00:00Z",
+        "value": 2120.5
+      }
+    ]
+  },
+  {
+    "service": "task-service",
+    "metric_type": "latency_p99",
+    "unit": "ms",
+    "data": [
+      {
+        "timestamp": "2024-01-25T08:00:00Z",
+        "value": 185.3
+      },
+      {
+        "timestamp": "2024-01-25T08:05:00Z",
+        "value": 192.7
+      },
+      {
+        "timestamp": "2024-01-25T08:10:00Z",
+        "value": 188.4
+      },
+      {
+        "timestamp": "2024-01-25T08:15:00Z",
+        "value": 198.1
+      },
+      {
+        "timestamp": "2024-01-25T08:20:00Z",
+        "value": 190.6
+      },
+      {
+        "timestamp": "2024-01-25T08:25:00Z",
+        "value": 195.3
+      },
+      {
+        "timestamp": "2024-01-25T08:30:00Z",
+        "value": 193.8
+      },
+      {
+        "timestamp": "2024-01-25T08:35:00Z",
+        "value": 201.2
+      },
+      {
+        "timestamp": "2024-01-25T08:40:00Z",
+        "value": 189.5
+      },
+      {
+        "timestamp": "2024-01-25T08:45:00Z",
+        "value": 196.7
+      },
+      {
+        "timestamp": "2024-01-25T08:50:00Z",
+        "value": 194.2
+      },
+      {
+        "timestamp": "2024-01-25T08:55:00Z",
+        "value": 191.8
+      },
+      {
+        "timestamp": "2024-01-25T09:00:00Z",
+        "value": 245.6
+      },
+      {
+        "timestamp": "2024-01-25T09:05:00Z",
+        "value": 380.4
+      },
+      {
+        "timestamp": "2024-01-25T09:10:00Z",
+        "value": 620.1
+      },
+      {
+        "timestamp": "2024-01-25T09:15:00Z",
+        "value": 1050.8
+      },
+      {
+        "timestamp": "2024-01-25T09:20:00Z",
+        "value": 1820.3
+      },
+      {
+        "timestamp": "2024-01-25T09:25:00Z",
+        "value": 3500.7
+      },
+      {
+        "timestamp": "2024-01-25T09:30:00Z",
+        "value": 8200.4
+      },
+      {
+        "timestamp": "2024-01-25T09:35:00Z",
+        "value": 15400.1
+      },
+      {
+        "timestamp": "2024-01-25T09:40:00Z",
+        "value": 22800.5
+      },
+      {
+        "timestamp": "2024-01-25T09:45:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T09:50:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T09:55:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:00:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:05:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:10:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:15:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:20:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:25:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:30:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:35:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:40:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:45:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:50:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T10:55:00Z",
+        "value": 30000.0
+      },
+      {
+        "timestamp": "2024-01-25T11:00:00Z",
+        "value": 30000.0
+      }
+    ]
+  }
+]
