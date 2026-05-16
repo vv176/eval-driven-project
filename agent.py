@@ -34,7 +34,7 @@ from tools import ToolExecutor
 load_dotenv()
 client = OpenAI()
 
-MODEL = "gpt-4o-mini"
+MODEL = "gpt-4o"
 
 SYSTEM_PROMPT = """You are an incident response agent for CloudDesk, a B2B SaaS platform.
 You investigate production incidents by using diagnostic tools, analyzing logs and metrics,

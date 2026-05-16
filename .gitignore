@@ -3,5 +3,6 @@ __pycache__/
 *.pyc
 .DS_Store
 agent_reference.py
+agent_v2/
 *.json.bak
 /results/

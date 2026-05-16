@@ -53,6 +53,8 @@ EXPECTED ROOT CAUSE:
 AGENT'S ROOT CAUSE:
 {agent_root_cause}
 
+IMPORTANT: Evaluate based on SEMANTIC MEANING, not exact wording. The agent does not need to use the same terminology as the expected answer. What matters is whether the agent identified the same underlying problem and mechanism. For example, describing a "per-item database query inside a loop" is equivalent to identifying an "N+1 query pattern" — different words, same concept.
+
 Evaluate on three axes (each 1-5):
 
 1. COMPONENT IDENTIFICATION: Did the agent correctly identify the failing component/service?
@@ -63,11 +65,12 @@ Evaluate on three axes (each 1-5):
    5 = Correct component, file, and line-level precision
 
 2. MECHANISM IDENTIFICATION: Did the agent correctly identify HOW the failure occurs?
+   Judge by semantic equivalence — the agent may describe the same mechanism using different terminology.
    1 = Wrong mechanism entirely
    2 = Vaguely correct category (e.g., "performance issue") but wrong mechanism
    3 = Right category and partially correct mechanism
-   4 = Correct mechanism with minor gaps
-   5 = Correct mechanism with full causal chain
+   4 = Correct mechanism with minor gaps in the causal chain
+   5 = Correct mechanism with full causal chain explained
 
 3. EVIDENCE QUALITY: Did the agent cite specific evidence (logs, metrics, code) to support the diagnosis?
    1 = No evidence cited
